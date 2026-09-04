@@ -1,0 +1,2263 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>ことばの歩数計 Ver.0.7.3</title>
+
+<style>
+
+body {
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Helvetica Neue",
+        sans-serif;
+
+    background: #f5f5f5;
+    margin: 0;
+    padding: 25px 18px;
+    text-align: center;
+    color: #333;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+    background: white;
+    padding: 28px 20px;
+    border-radius: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+h1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #777;
+    margin-bottom: 25px;
+}
+
+.status {
+    font-size: 19px;
+    font-weight: bold;
+    margin: 18px 0;
+}
+
+.waiting {
+    color: #777;
+}
+
+.speaking {
+    color: #222;
+}
+
+.timer {
+    font-size: 48px;
+    font-weight: bold;
+    margin: 25px 0;
+    font-variant-numeric: tabular-nums;
+}
+
+button {
+    font-size: 18px;
+    padding: 14px 22px;
+    margin: 6px;
+    border-radius: 12px;
+    border: none;
+}
+
+.start {
+    background: #222;
+    color: white;
+}
+
+.stop {
+    background: #ddd;
+    color: #333;
+}
+
+.reset {
+    background: #eee;
+    color: #555;
+}
+
+.result {
+    margin-top: 25px;
+    padding: 18px;
+    background: #f7f7f7;
+    border-radius: 15px;
+}
+
+.result-title {
+    color: #666;
+    margin-top: 12px;
+}
+
+.number {
+    font-size: 30px;
+    font-weight: bold;
+    margin: 5px 0 15px;
+}
+
+.small {
+    font-size: 15px;
+    color: #777;
+}
+
+.transcript {
+    margin-top: 20px;
+    padding: 15px;
+    background: #fafafa;
+    border-radius: 12px;
+    text-align: left;
+    line-height: 1.7;
+    min-height: 50px;
+}
+
+.meter {
+    margin-top: 18px;
+    height: 10px;
+    background: #eee;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.meter-bar {
+    height: 100%;
+    width: 0%;
+    background: #333;
+}
+
+.message {
+    margin-top: 25px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #777;
+}
+
+
+/* =========================
+   Ver.0.5 記録機能
+========================= */
+
+.save-area {
+    margin-top: 22px;
+}
+
+.save {
+    background: #222;
+    color: white;
+    width: calc(100% - 12px);
+    max-width: 320px;
+}
+
+.history {
+    margin-top: 26px;
+    padding: 18px;
+    background: #fafafa;
+    border-radius: 15px;
+    text-align: left;
+}
+
+.history h2 {
+    font-size: 20px;
+    margin: 0 0 12px;
+    text-align: center;
+}
+
+.history-note {
+    font-size: 13px;
+    color: #777;
+    line-height: 1.6;
+    text-align: center;
+    margin-bottom: 14px;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.history-table th,
+.history-table td {
+    padding: 10px 6px;
+    border-bottom: 1px solid #e5e5e5;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.history-table th:first-child,
+.history-table td:first-child {
+    text-align: left;
+}
+
+.empty-history {
+    color: #888;
+    text-align: center;
+    padding: 18px 0 8px;
+}
+
+.delete-history {
+    margin-top: 16px;
+    background: #eee;
+    color: #666;
+    width: 100%;
+}
+
+.save-message {
+    min-height: 22px;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+}
+
+
+
+/* =========================
+   Ver.0.7.3 本人らしさ + 動作チェック
+========================= */
+.debug-panel {
+    margin-top: 22px;
+    padding: 16px;
+    background: #fff7e6;
+    border-radius: 14px;
+    text-align: left;
+    font-size: 14px;
+    line-height: 1.8;
+}
+.debug-panel h2 {
+    font-size: 18px;
+    margin: 0 0 8px;
+    text-align: center;
+}
+.debug-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding: 4px 0;
+}
+.debug-error {
+    margin-top: 10px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: #555;
+    font-size: 12px;
+}
+.voice-id {
+    margin-top: 26px;
+    padding: 18px;
+    background: #f7f7f7;
+    border-radius: 15px;
+    text-align: left;
+}
+.voice-id h2 {
+    text-align: center;
+    font-size: 20px;
+    margin: 0 0 10px;
+}
+.voice-id p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #666;
+}
+.voice-score {
+    margin-top: 14px;
+    padding: 16px;
+    background: white;
+    border-radius: 12px;
+    text-align: center;
+}
+.voice-score .big {
+    font-size: 38px;
+    font-weight: bold;
+}
+.voice-button {
+    width: 100%;
+    background: #222;
+    color: white;
+}
+.voice-clear {
+    width: 100%;
+    background: #eee;
+    color: #666;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+<h1>ことばの歩数計</h1>
+
+<div class="subtitle">
+今日の発話活動
+</div>
+
+
+<div id="status"
+     class="status waiting">
+
+マイク待機中
+
+</div>
+
+
+<div id="timer"
+     class="timer">
+
+00:00:00
+
+</div>
+
+
+<button
+    class="start"
+    onclick="startListening()">
+
+🎙️ 計測開始
+
+</button>
+
+
+<button
+    class="stop"
+    onclick="stopListening()">
+
+■ 停止
+
+</button>
+
+
+<button
+    class="reset"
+    onclick="resetAll()">
+
+↻ リセット
+
+</button>
+
+
+<div class="meter">
+
+<div id="meterBar"
+     class="meter-bar">
+</div>
+
+</div>
+
+
+<div class="result">
+
+<div class="result-title">
+発話時間
+</div>
+
+<div id="speechTime"
+     class="number">
+
+0分 0秒
+
+</div>
+
+
+<div class="result-title">
+推定発話語数
+</div>
+
+<div id="wordCount"
+     class="number">
+
+0語
+
+</div>
+
+
+<div class="result-title">
+推定発話速度
+</div>
+
+<div id="speechRate"
+     class="number">
+
+0語/分
+
+</div>
+
+<div class="small">
+
+※日本語音声認識からの推定値
+
+</div>
+
+</div>
+
+
+<div class="transcript">
+
+<strong>認識したことば</strong>
+
+<div id="transcript">
+まだありません
+</div>
+
+</div>
+
+
+
+<div class="debug-panel">
+<h2>🛠️ 動作チェック Ver.0.7.3</h2>
+<div class="debug-row"><span>🎙️ マイク取得</span><strong id="dbgMic">未確認</strong></div>
+<div class="debug-row"><span>🔊 音量解析</span><strong id="dbgAudio">未確認</strong></div>
+<div class="debug-row"><span>📝 音声認識</span><strong id="dbgSpeech">未確認</strong></div>
+<div class="debug-row"><span>🗣️ 発話検知</span><strong id="dbgVad">未確認</strong></div>
+<div class="debug-row"><span>👤 本人特徴解析</span><strong id="dbgVoice">未確認</strong></div>
+<div id="dbgError" class="debug-error"></div>
+</div>
+
+<div class="voice-id">
+<h2>🎤 本人らしさ実験 Ver.0.7.3</h2>
+<p>
+① 静かな場所で自分の地声を10〜20秒計測 → 停止 → 「本人の声として登録」。<br>
+② リセット後、自分・他人・テレビなどを10〜20秒計測 → 停止。<br>
+登録した声との音響的な近さを試験表示します。
+</p>
+
+<button class="voice-button" onclick="registerMyVoice()">
+👤 この計測を「本人の声」として登録
+</button>
+
+<div id="voiceRegisterMessage" class="save-message">未登録</div>
+
+<div class="voice-score">
+<div>本人らしさ（実験値）</div>
+<div id="voiceScore" class="big">--%</div>
+<div id="voiceJudge" class="small">本人音声を登録してください</div>
+<div id="voiceFeatures" class="small" style="margin-top:10px;line-height:1.7;"></div>
+</div>
+
+<button class="voice-clear" onclick="clearMyVoice()">
+🗑️ 本人音声の登録値を消す
+</button>
+
+<div class="experiment-note">
+※本人確認や声紋認証ではありません。声の高さ、ゼロ交差率、波形変化量などの
+簡易音響特徴を比較する概念実証です。生音声や認識文章は本人登録データとして保存しません。
+</div>
+</div>
+
+<div class="experiment">
+
+<h2>🧪 識別実験モード</h2>
+
+<p>
+今のVer.0.6は、まだ自動で本人・他人・テレビを見分けません。<br>
+「いま何を聞かせているか」を選び、同じ条件で短く計測して違いを比べる実験版です。
+</p>
+
+<div class="mode-buttons">
+
+<button class="mode-button"
+        id="modeSelf"
+        onclick="setExperimentMode('self')">
+🗣️ 自分だけ
+</button>
+
+<button class="mode-button"
+        id="modeOther"
+        onclick="setExperimentMode('other')">
+👤 他人だけ
+</button>
+
+<button class="mode-button"
+        id="modeMedia"
+        onclick="setExperimentMode('media')">
+📺 テレビ・ラジオ
+</button>
+
+<button class="mode-button"
+        id="modeMixed"
+        onclick="setExperimentMode('mixed')">
+🔀 混在
+</button>
+
+</div>
+
+<div id="experimentModeStatus"
+     class="mode-status">
+モード未選択
+</div>
+
+<button class="save"
+        onclick="saveExperimentSample()">
+🧪 この計測を実験データとして記録
+</button>
+
+<div id="experimentMessage"
+     class="save-message">
+</div>
+
+<div id="experimentSamples"
+     class="sample-list">
+</div>
+
+<button class="sample-clear"
+        onclick="clearExperimentSamples()">
+🗑️ 実験データを消す
+</button>
+
+<div class="experiment-note">
+おすすめ：各モードを30秒〜1分程度。条件を変える前に「■停止 → 実験データとして記録 → ↻リセット」。
+認識した文章そのものは実験データには保存しません。
+</div>
+
+</div>
+
+
+<div class="save-area">
+
+<button
+    class="save"
+    onclick="saveToday()">
+
+💾 今日の記録を保存
+
+</button>
+
+<div id="saveMessage"
+     class="save-message">
+</div>
+
+</div>
+
+
+<div class="history">
+
+<h2>📅 過去7日間</h2>
+
+<div class="history-note">
+保存するのは発話時間・推定語数・推定発話速度だけです。<br>
+認識した文章そのものは保存しません。
+</div>
+
+<div id="historyArea">
+</div>
+
+<button
+    class="delete-history"
+    onclick="deleteHistory()">
+
+🗑️ 保存記録をすべて消す
+
+</button>
+
+</div>
+
+
+<div class="message">
+
+声をマイクで検知し、<br>
+発話時間と音声認識された言葉を<br>
+試験的に記録します。
+
+<br><br>
+
+人と比べるためではなく、<br>
+自分の変化に気づくための<br>
+
+<strong>
+「ことばの歩数計」
+</strong>
+
+</div>
+
+</div>
+
+
+<script>
+
+
+/* =========================
+   音量による発話検知
+========================= */
+
+let audioContext = null;
+
+let analyser = null;
+
+let microphone = null;
+
+let animationId = null;
+
+let speaking = false;
+
+let speechStart = null;
+
+let totalSpeechSeconds = 0;
+
+let lastSpeechTime = null;
+
+const THRESHOLD = 0.035;
+
+/* Ver.0.7.3 音響特徴 */
+let featureFrames = 0;
+let featureRmsSum = 0;
+let featureZcrSum = 0;
+let featureDiffSum = 0;
+let featurePitchSum = 0;
+let featurePitchFrames = 0;
+
+
+/* =========================
+   音声認識
+========================= */
+
+let recognition = null;
+
+let recognitionRunning = false;
+
+let recognitionSupported = false;
+
+let finalTranscript = "";
+
+
+/* =========================
+   初期設定
+========================= */
+
+
+function setDebug(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+}
+
+function setDebugError(error) {
+    const el = document.getElementById("dbgError");
+    if (!el) return;
+
+    if (!error) {
+        el.textContent = "";
+        return;
+    }
+
+    const name = error && error.name ? error.name : "";
+    const message = error && error.message ? error.message : String(error);
+    el.textContent = "エラー詳細: " + (name ? name + " / " : "") + message;
+}
+
+function setupRecognition() {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+
+        recognitionSupported = false;
+        setDebug("dbgSpeech", "❌ 非対応");
+
+        return;
+
+    }
+
+    recognitionSupported = true;
+    setDebug("dbgSpeech", "✅ 対応");
+
+    recognition = new SpeechRecognition();
+
+    recognition.lang = "ja-JP";
+
+    recognition.continuous = true;
+
+    recognition.interimResults = true;
+
+    recognition.maxAlternatives = 1;
+
+
+    recognition.onresult = function(event) {
+
+        setDebug("dbgSpeech", "✅ 認識中");
+
+        let text = "";
+
+        for (
+            let i = event.resultIndex;
+            i < event.results.length;
+            i++
+        ) {
+
+            text +=
+                event.results[i][0].transcript;
+
+        }
+
+
+        document.getElementById("transcript")
+            .textContent =
+            finalTranscript + text;
+
+
+        /*
+          確定した文章だけ保存
+        */
+
+        for (
+            let i = event.resultIndex;
+            i < event.results.length;
+            i++
+        ) {
+
+            if (
+                event.results[i].isFinal
+            ) {
+
+                finalTranscript +=
+                    event.results[i][0].transcript;
+
+            }
+
+        }
+
+
+        updateWordCount();
+
+    };
+
+
+    recognition.onerror = function(event) {
+
+        setDebug("dbgSpeech", "⚠️ " + event.error);
+
+        console.log(
+            "音声認識エラー:",
+            event.error
+        );
+
+    };
+
+
+    recognition.onend = function() {
+
+        recognitionRunning = false;
+
+        /*
+          計測中なら再起動
+        */
+
+        if (
+            audioContext &&
+            !recognitionRunning
+        ) {
+
+            try {
+
+                recognition.start();
+
+                recognitionRunning = true;
+
+            } catch(e) {
+
+                console.log(e);
+
+            }
+
+        }
+
+    };
+
+}
+
+
+/* =========================
+   計測開始
+========================= */
+
+async function startListening() {
+
+    setDebug("dbgMic", "確認中…");
+    setDebug("dbgAudio", "未確認");
+    setDebug("dbgVad", "未確認");
+    setDebug("dbgVoice", "未確認");
+    setDebugError(null);
+
+    try {
+
+        const stream =
+            await navigator.mediaDevices
+                .getUserMedia({
+                    audio: true
+                });
+
+        setDebug("dbgMic", "✅ OK");
+
+
+        audioContext =
+            new (
+                window.AudioContext ||
+                window.webkitAudioContext
+            )();
+
+
+        analyser =
+            audioContext.createAnalyser();
+
+        analyser.fftSize = 1024;
+
+
+        microphone =
+            audioContext
+                .createMediaStreamSource(
+                    stream
+                );
+
+
+        microphone.connect(analyser);
+
+        setDebug("dbgAudio", "✅ 開始");
+
+
+        document.getElementById("status")
+            .textContent =
+            "🟢 計測中";
+
+
+        /*
+          音声認識を開始
+        */
+
+        setupRecognition();
+
+
+        if (recognitionSupported) {
+
+            try {
+
+                recognition.start();
+
+                recognitionRunning = true;
+
+            } catch(e) {
+
+                console.log(e);
+
+            }
+
+        }
+
+
+        detectVoice();
+
+    }
+
+    catch(error) {
+
+        document.getElementById("status")
+            .textContent =
+            "計測開始でエラーが発生しました";
+
+        setDebugError(error);
+
+        if (
+            error &&
+            (
+                error.name === "NotAllowedError" ||
+                error.name === "NotFoundError"
+            )
+        ) {
+            setDebug("dbgMic", "❌ 失敗");
+        } else {
+            setDebug("dbgAudio", "❌ エラー");
+        }
+
+        console.log(error);
+
+    }
+
+}
+
+
+/* =========================
+   発話検知
+========================= */
+
+function detectVoice() {
+
+    if (!analyser) {
+        return;
+    }
+
+
+    const data =
+        new Uint8Array(
+            analyser.fftSize
+        );
+
+
+    analyser.getByteTimeDomainData(data);
+
+
+    let sum = 0;
+
+
+    for (
+        let i = 0;
+        i < data.length;
+        i++
+    ) {
+
+        const value =
+            (data[i] - 128) / 128;
+
+        sum += value * value;
+
+    }
+
+
+    const volume =
+        Math.sqrt(
+            sum / data.length
+        );
+
+    try {
+        collectVoiceFeatures(data, volume);
+        setDebug("dbgVoice", "✅ 解析中");
+    } catch(error) {
+        setDebug("dbgVoice", "❌ エラー");
+        setDebugError(error);
+        console.log("本人特徴解析エラー:", error);
+    }
+
+
+    const meter =
+        Math.min(
+            volume * 500,
+            100
+        );
+
+
+    document.getElementById("meterBar")
+        .style.width =
+        meter + "%";
+
+    setDebug("dbgAudio", "✅ 動作中");
+
+
+    if (volume > THRESHOLD) {
+
+        if (!speaking) {
+
+            speaking = true;
+
+            speechStart =
+                Date.now();
+
+            document.getElementById("status")
+                .textContent =
+                "🗣️ 発話中";
+
+            document.getElementById("status")
+                .className =
+                "status speaking";
+
+        }
+
+
+        lastSpeechTime =
+            Date.now();
+
+    }
+
+    else {
+
+        if (
+            speaking &&
+            Date.now() - lastSpeechTime > 700
+        ) {
+
+            speaking = false;
+
+
+            const duration =
+                (
+                    lastSpeechTime -
+                    speechStart
+                ) / 1000;
+
+
+            totalSpeechSeconds +=
+                duration;
+
+
+            updateDisplay();
+
+            document.getElementById("status")
+                .textContent =
+                "🟢 計測中";
+
+            document.getElementById("status")
+                .className =
+                "status waiting";
+
+        }
+
+    }
+
+
+    let current =
+        totalSpeechSeconds;
+
+
+    if (speaking) {
+
+        current +=
+            (
+                Date.now() -
+                speechStart
+            ) / 1000;
+
+    }
+
+
+    updateTimer(current);
+
+
+    animationId =
+        requestAnimationFrame(
+            detectVoice
+        );
+
+}
+
+
+/* =========================
+   語数推定
+========================= */
+
+function estimateWords(text) {
+
+    if (!text) {
+        return 0;
+    }
+
+
+    /*
+      日本語は空白で単語が
+      区切られていないため、
+      Intl.Segmenterが使える場合は
+      日本語の語単位で分割します。
+    */
+
+    if (
+        typeof Intl !== "undefined" &&
+        Intl.Segmenter
+    ) {
+
+        const segmenter =
+            new Intl.Segmenter(
+                "ja",
+                {
+                    granularity: "word"
+                }
+            );
+
+
+        let count = 0;
+
+
+        for (
+            const item of
+            segmenter.segment(text)
+        ) {
+
+            if (
+                item.isWordLike
+            ) {
+
+                count++;
+
+            }
+
+        }
+
+
+        return count;
+
+    }
+
+
+    /*
+      古い環境用の簡易推定
+    */
+
+    const clean =
+        text.replace(
+            /\s/g,
+            ""
+        );
+
+
+    return Math.round(
+        clean.length / 2
+    );
+
+}
+
+
+/* =========================
+   語数表示
+========================= */
+
+function updateWordCount() {
+
+    const words =
+        estimateWords(
+            finalTranscript
+        );
+
+
+    document.getElementById("wordCount")
+        .textContent =
+        words + "語";
+
+
+    updateSpeechRate(words);
+
+}
+
+
+/* =========================
+   発話速度
+========================= */
+
+function updateSpeechRate(words) {
+
+    if (
+        totalSpeechSeconds <= 0
+    ) {
+
+        document.getElementById(
+            "speechRate"
+        ).textContent =
+            "0語/分";
+
+        return;
+
+    }
+
+
+    const minutes =
+        totalSpeechSeconds / 60;
+
+
+    const rate =
+        Math.round(
+            words / minutes
+        );
+
+
+    document.getElementById(
+        "speechRate"
+    ).textContent =
+        rate + "語/分";
+
+}
+
+
+
+
+/* =========================
+   Ver.0.7.3 本人らしさ実験
+========================= */
+const VOICE_PROFILE_KEY = "kotobaHosuukeiVoiceProfileV073";
+
+function collectVoiceFeatures(data, rms) {
+    if (rms <= THRESHOLD) return;
+
+    let crossings = 0;
+    let diff = 0;
+
+    for (let i = 1; i < data.length; i++) {
+        const a = data[i - 1] - 128;
+        const b = data[i] - 128;
+
+        if ((a >= 0 && b < 0) || (a < 0 && b >= 0)) {
+            crossings++;
+        }
+
+        diff += Math.abs(data[i] - data[i - 1]);
+    }
+
+    featureFrames++;
+    featureRmsSum += rms;
+    featureZcrSum += crossings / data.length;
+    featureDiffSum += diff / data.length;
+
+    if (audioContext && featureFrames % 5 === 0) {
+        const pitch = estimatePitch(data, audioContext.sampleRate);
+
+        if (pitch >= 70 && pitch <= 400) {
+            featurePitchSum += pitch;
+            featurePitchFrames++;
+        }
+    }
+}
+
+function estimatePitch(data, sampleRate) {
+    const n = data.length;
+    const x = new Float32Array(n);
+    let mean = 0;
+
+    for (let i = 0; i < n; i++) mean += data[i];
+    mean /= n;
+
+    for (let i = 0; i < n; i++) {
+        x[i] = (data[i] - mean) / 128;
+    }
+
+    const minLag = Math.floor(sampleRate / 400);
+    const maxLag = Math.min(Math.floor(sampleRate / 70), n - 2);
+
+    let bestLag = 0;
+    let bestCorrelation = 0;
+
+    for (let lag = minLag; lag <= maxLag; lag++) {
+        let correlation = 0;
+
+        for (let i = 0; i < n - lag; i++) {
+            correlation += x[i] * x[i + lag];
+        }
+
+        if (correlation > bestCorrelation) {
+            bestCorrelation = correlation;
+            bestLag = lag;
+        }
+    }
+
+    return bestLag ? sampleRate / bestLag : 0;
+}
+
+function currentVoiceFeatures() {
+    if (featureFrames <= 0) return null;
+
+    return {
+        rms: featureRmsSum / featureFrames,
+        zcr: featureZcrSum / featureFrames,
+        diff: featureDiffSum / featureFrames,
+        pitch: featurePitchFrames > 0
+            ? featurePitchSum / featurePitchFrames
+            : 0
+    };
+}
+
+function loadMyVoice() {
+    try {
+        const raw = localStorage.getItem(VOICE_PROFILE_KEY);
+        return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function similarity(value, reference, floor) {
+    if (
+        !Number.isFinite(value) ||
+        !Number.isFinite(reference) ||
+        reference === 0
+    ) {
+        return 0.5;
+    }
+
+    const d =
+        Math.abs(value - reference) /
+        Math.max(Math.abs(reference), floor);
+
+    return Math.max(0, Math.min(1, 1 - d));
+}
+
+function registerMyVoice() {
+    const f = currentVoiceFeatures();
+
+    if (!f || totalSpeechSeconds < 5) {
+        document.getElementById("voiceRegisterMessage").textContent =
+            "5秒以上、自分の声を計測してから登録してください。";
+        return;
+    }
+
+    localStorage.setItem(
+        VOICE_PROFILE_KEY,
+        JSON.stringify(f)
+    );
+
+    document.getElementById("voiceRegisterMessage").textContent =
+        "✅ 本人の基準値を登録しました";
+
+    updateVoiceScore();
+}
+
+function updateVoiceScore() {
+    const p = loadMyVoice();
+    const c = currentVoiceFeatures();
+
+    const scoreEl = document.getElementById("voiceScore");
+    const judgeEl = document.getElementById("voiceJudge");
+    const featureEl = document.getElementById("voiceFeatures");
+
+    if (!p) {
+        scoreEl.textContent = "--%";
+        judgeEl.textContent = "本人音声を登録してください";
+        return;
+    }
+
+    if (!c || totalSpeechSeconds < 3) {
+        scoreEl.textContent = "--%";
+        judgeEl.textContent = "3秒以上計測すると比較できます";
+        return;
+    }
+
+    const rms = similarity(c.rms, p.rms, 0.02);
+    const zcr = similarity(c.zcr, p.zcr, 0.02);
+    const dif = similarity(c.diff, p.diff, 1);
+    const pit =
+        (c.pitch > 0 && p.pitch > 0)
+        ? similarity(c.pitch, p.pitch, 40)
+        : 0.5;
+
+    const score =
+        Math.round(
+            100 * (
+                rms * 0.10 +
+                zcr * 0.25 +
+                dif * 0.20 +
+                pit * 0.45
+            )
+        );
+
+    scoreEl.textContent = score + "%";
+
+    if (score >= 80) {
+        judgeEl.textContent = "登録した声にかなり近い傾向";
+    } else if (score >= 60) {
+        judgeEl.textContent = "登録した声にやや近い傾向";
+    } else {
+        judgeEl.textContent = "登録した声とは異なる傾向";
+    }
+
+    featureEl.innerHTML =
+        "平均ピッチ：約" + Math.round(c.pitch || 0) + " Hz<br>" +
+        "ゼロ交差率：" + c.zcr.toFixed(3) + "<br>" +
+        "波形変化量：" + c.diff.toFixed(2);
+}
+
+function clearMyVoice() {
+    localStorage.removeItem(VOICE_PROFILE_KEY);
+
+    document.getElementById("voiceRegisterMessage").textContent =
+        "本人登録を消しました";
+
+    document.getElementById("voiceScore").textContent = "--%";
+    document.getElementById("voiceJudge").textContent =
+        "本人音声を登録してください";
+    document.getElementById("voiceFeatures").textContent = "";
+}
+
+function resetVoiceFeatures() {
+    featureFrames = 0;
+    featureRmsSum = 0;
+    featureZcrSum = 0;
+    featureDiffSum = 0;
+    featurePitchSum = 0;
+    featurePitchFrames = 0;
+
+    const s = document.getElementById("voiceScore");
+    if (s) s.textContent = "--%";
+
+    const f = document.getElementById("voiceFeatures");
+    if (f) f.textContent = "";
+}
+
+
+/* =========================
+   Ver.0.6 識別実験モード
+========================= */
+
+.experiment {
+    margin-top: 26px;
+    padding: 18px;
+    background: #f7f7f7;
+    border-radius: 15px;
+    text-align: left;
+}
+
+.experiment h2 {
+    text-align: center;
+    font-size: 20px;
+    margin: 0 0 10px;
+}
+
+.experiment p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #666;
+    margin: 8px 0 14px;
+}
+
+.mode-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.mode-button {
+    width: 100%;
+    margin: 0;
+    padding: 12px 8px;
+    font-size: 15px;
+    background: #eee;
+    color: #333;
+}
+
+.mode-button.active {
+    background: #222;
+    color: white;
+}
+
+.mode-status {
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    background: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+.sample-list {
+    margin-top: 14px;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.sample-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.sample-row:last-child {
+    border-bottom: none;
+}
+
+.sample-label {
+    color: #555;
+}
+
+.sample-value {
+    font-variant-numeric: tabular-nums;
+    font-weight: bold;
+}
+
+.sample-clear {
+    margin-top: 12px;
+    width: 100%;
+    background: #eee;
+    color: #666;
+}
+
+.experiment-note {
+    margin-top: 12px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #888;
+}
+
+/* =========================
+   Ver.0.6 識別実験モード
+========================= */
+
+const EXPERIMENT_KEY =
+    "kotobaHosuukeiExperimentsV06";
+
+let experimentMode = null;
+
+
+function setExperimentMode(mode) {
+
+    experimentMode = mode;
+
+    const buttons = {
+        self: "modeSelf",
+        other: "modeOther",
+        media: "modeMedia",
+        mixed: "modeMixed"
+    };
+
+    Object.values(buttons)
+        .forEach(id => {
+            const button =
+                document.getElementById(id);
+
+            if (button) {
+                button.classList.remove("active");
+            }
+        });
+
+    const selected =
+        document.getElementById(
+            buttons[mode]
+        );
+
+    if (selected) {
+        selected.classList.add("active");
+    }
+
+    const labels = {
+        self: "🗣️ 自分だけ",
+        other: "👤 他人だけ",
+        media: "📺 テレビ・ラジオ",
+        mixed: "🔀 混在"
+    };
+
+    document.getElementById(
+        "experimentModeStatus"
+    ).textContent =
+        "選択中：" + labels[mode];
+
+    document.getElementById(
+        "experimentMessage"
+    ).textContent = "";
+
+}
+
+
+function loadExperimentSamples() {
+
+    try {
+
+        const raw =
+            localStorage.getItem(
+                EXPERIMENT_KEY
+            );
+
+        return raw
+            ? JSON.parse(raw)
+            : [];
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "実験データ読み込みエラー:",
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+
+function saveExperimentSamples(samples) {
+
+    localStorage.setItem(
+        EXPERIMENT_KEY,
+        JSON.stringify(samples)
+    );
+
+}
+
+
+function saveExperimentSample() {
+
+    if (!experimentMode) {
+
+        document.getElementById(
+            "experimentMessage"
+        ).textContent =
+            "先に実験モードを選んでください。";
+
+        return;
+
+    }
+
+    if (totalSpeechSeconds <= 0) {
+
+        document.getElementById(
+            "experimentMessage"
+        ).textContent =
+            "まだ発話時間がありません。";
+
+        return;
+
+    }
+
+    const words =
+        getCurrentWords();
+
+    const rate =
+        getCurrentRate(words);
+
+    const sample = {
+        id: Date.now(),
+        mode: experimentMode,
+        speechSeconds:
+            Math.round(
+                totalSpeechSeconds
+            ),
+        words: words,
+        rate: rate,
+        savedAt:
+            new Date().toISOString()
+    };
+
+    const samples =
+        loadExperimentSamples();
+
+    samples.push(sample);
+
+    saveExperimentSamples(samples);
+
+    document.getElementById(
+        "experimentMessage"
+    ).textContent =
+        "✅ 実験データを記録しました";
+
+    renderExperimentSamples();
+
+}
+
+
+function experimentModeLabel(mode) {
+
+    const labels = {
+        self: "🗣️ 自分",
+        other: "👤 他人",
+        media: "📺 メディア",
+        mixed: "🔀 混在"
+    };
+
+    return labels[mode] || mode;
+
+}
+
+
+function renderExperimentSamples() {
+
+    const area =
+        document.getElementById(
+            "experimentSamples"
+        );
+
+    if (!area) {
+        return;
+    }
+
+    const samples =
+        loadExperimentSamples();
+
+    if (samples.length === 0) {
+
+        area.innerHTML =
+            '<div class="empty-history">まだ実験データはありません</div>';
+
+        return;
+
+    }
+
+    const recent =
+        samples
+            .slice(-12)
+            .reverse();
+
+    area.innerHTML =
+        recent
+            .map(sample => {
+
+                return `
+<div class="sample-row">
+<div class="sample-label">${experimentModeLabel(sample.mode)}</div>
+<div class="sample-value">${formatHistoryTime(sample.speechSeconds)}</div>
+<div class="sample-value">${Number(sample.words || 0).toLocaleString()}語</div>
+</div>`;
+
+            })
+            .join("");
+
+}
+
+
+function clearExperimentSamples() {
+
+    const ok =
+        confirm(
+            "保存した実験データをすべて消しますか？"
+        );
+
+    if (!ok) {
+        return;
+    }
+
+    localStorage.removeItem(
+        EXPERIMENT_KEY
+    );
+
+    document.getElementById(
+        "experimentMessage"
+    ).textContent =
+        "実験データを消しました";
+
+    renderExperimentSamples();
+
+}
+
+
+
+/* =========================
+   Ver.0.5 今日の記録保存
+========================= */
+
+const STORAGE_KEY =
+    "kotobaHosuukeiHistoryV05";
+
+
+function getLocalDateKey(date = new Date()) {
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(date.getMonth() + 1)
+            .padStart(2, "0");
+
+    const day =
+        String(date.getDate())
+            .padStart(2, "0");
+
+    return year + "-" + month + "-" + day;
+
+}
+
+
+function loadHistory() {
+
+    try {
+
+        const raw =
+            localStorage.getItem(
+                STORAGE_KEY
+            );
+
+        if (!raw) {
+            return {};
+        }
+
+        const data =
+            JSON.parse(raw);
+
+        return data &&
+               typeof data === "object"
+            ? data
+            : {};
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "記録の読み込みエラー:",
+            error
+        );
+
+        return {};
+
+    }
+
+}
+
+
+function writeHistory(history) {
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(history)
+    );
+
+}
+
+
+function getCurrentWords() {
+
+    return estimateWords(
+        finalTranscript
+    );
+
+}
+
+
+function getCurrentRate(words) {
+
+    if (totalSpeechSeconds <= 0) {
+        return 0;
+    }
+
+    return Math.round(
+        words /
+        (totalSpeechSeconds / 60)
+    );
+
+}
+
+
+function saveToday() {
+
+    if (totalSpeechSeconds <= 0) {
+
+        document.getElementById(
+            "saveMessage"
+        ).textContent =
+            "まだ発話時間がありません。計測してから保存してください。";
+
+        return;
+
+    }
+
+    try {
+
+        const history =
+            loadHistory();
+
+        const today =
+            getLocalDateKey();
+
+        const words =
+            getCurrentWords();
+
+        const rate =
+            getCurrentRate(words);
+
+        history[today] = {
+            date: today,
+            speechSeconds:
+                Math.round(
+                    totalSpeechSeconds
+                ),
+            words: words,
+            rate: rate,
+            savedAt:
+                new Date().toISOString()
+        };
+
+        writeHistory(history);
+
+        document.getElementById(
+            "saveMessage"
+        ).textContent =
+            "✅ 今日の記録を保存しました";
+
+        renderHistory();
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "保存エラー:",
+            error
+        );
+
+        document.getElementById(
+            "saveMessage"
+        ).textContent =
+            "保存できませんでした";
+
+    }
+
+}
+
+
+function formatHistoryTime(seconds) {
+
+    seconds =
+        Math.max(
+            0,
+            Math.round(seconds || 0)
+        );
+
+    const minutes =
+        Math.floor(seconds / 60);
+
+    const secs =
+        seconds % 60;
+
+    return minutes +
+           "分" +
+           secs +
+           "秒";
+
+}
+
+
+function formatShortDate(dateKey) {
+
+    const parts =
+        dateKey.split("-");
+
+    if (parts.length !== 3) {
+        return dateKey;
+    }
+
+    return Number(parts[1]) +
+           "/" +
+           Number(parts[2]);
+
+}
+
+
+function renderHistory() {
+
+    const area =
+        document.getElementById(
+            "historyArea"
+        );
+
+    if (!area) {
+        return;
+    }
+
+    const history =
+        loadHistory();
+
+    const dates = [];
+
+    const today =
+        new Date();
+
+    for (
+        let i = 0;
+        i < 7;
+        i++
+    ) {
+
+        const date =
+            new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                today.getDate() - i
+            );
+
+        dates.push(
+            getLocalDateKey(date)
+        );
+
+    }
+
+    const rows =
+        dates
+            .filter(
+                dateKey =>
+                    history[dateKey]
+            )
+            .map(
+                dateKey => {
+                    const item =
+                        history[dateKey];
+
+                    return `
+<tr>
+<td>${formatShortDate(dateKey)}</td>
+<td>${formatHistoryTime(item.speechSeconds)}</td>
+<td>${Number(item.words || 0).toLocaleString()}語</td>
+<td>${Number(item.rate || 0).toLocaleString()}語/分</td>
+</tr>`;
+                }
+            );
+
+    if (rows.length === 0) {
+
+        area.innerHTML =
+            '<div class="empty-history">まだ保存記録はありません</div>';
+
+        return;
+
+    }
+
+    area.innerHTML = `
+<table class="history-table">
+<thead>
+<tr>
+<th>日</th>
+<th>発話時間</th>
+<th>推定語数</th>
+<th>速度</th>
+</tr>
+</thead>
+<tbody>
+${rows.join("")}
+</tbody>
+</table>`;
+
+}
+
+
+function deleteHistory() {
+
+    const ok =
+        confirm(
+            "保存した記録をすべて消しますか？"
+        );
+
+    if (!ok) {
+        return;
+    }
+
+    localStorage.removeItem(
+        STORAGE_KEY
+    );
+
+    document.getElementById(
+        "saveMessage"
+    ).textContent =
+        "保存記録を消しました";
+
+    renderHistory();
+
+}
+
+
+
+/* =========================
+   停止
+========================= */
+
+function stopListening() {
+
+    if (animationId) {
+
+        cancelAnimationFrame(
+            animationId
+        );
+
+        animationId = null;
+
+    }
+
+
+    if (speaking) {
+
+        const duration =
+            (
+                lastSpeechTime -
+                speechStart
+            ) / 1000;
+
+
+        totalSpeechSeconds +=
+            duration;
+
+
+        speaking = false;
+
+    }
+
+
+    if (recognition) {
+
+        try {
+
+            recognition.stop();
+
+        } catch(e) {}
+
+    }
+
+
+    recognitionRunning = false;
+
+
+    if (microphone) {
+
+        microphone.mediaStream
+            .getTracks()
+            .forEach(
+                track => track.stop()
+            );
+
+    }
+
+
+    if (audioContext) {
+
+        audioContext.close();
+
+    }
+
+
+    microphone = null;
+
+    audioContext = null;
+
+    analyser = null;
+
+
+    updateDisplay();
+
+    updateVoiceScore();
+
+
+    document.getElementById("status")
+        .textContent =
+        "停止しました";
+
+    document.getElementById("status")
+        .className =
+        "status waiting";
+
+}
+
+
+/* =========================
+   リセット
+========================= */
+
+function resetAll() {
+
+    stopListening();
+
+
+    totalSpeechSeconds = 0;
+
+    finalTranscript = "";
+
+    speaking = false;
+
+    resetVoiceFeatures();
+
+
+    document.getElementById("transcript")
+        .textContent =
+        "まだありません";
+
+
+    updateTimer(0);
+
+    updateDisplay();
+
+
+    document.getElementById("status")
+        .textContent =
+        "マイク待機中";
+
+}
+
+
+/* =========================
+   タイマー表示
+========================= */
+
+function updateTimer(seconds) {
+
+    seconds =
+        Math.floor(seconds);
+
+
+    const hours =
+        Math.floor(
+            seconds / 3600
+        );
+
+
+    const minutes =
+        Math.floor(
+            (seconds % 3600) / 60
+        );
+
+
+    const secs =
+        seconds % 60;
+
+
+    document.getElementById("timer")
+        .textContent =
+
+        String(hours)
+            .padStart(2, "0")
+        + ":" +
+
+        String(minutes)
+            .padStart(2, "0")
+        + ":" +
+
+        String(secs)
+            .padStart(2, "0");
+
+}
+
+
+/* =========================
+   結果表示
+========================= */
+
+function updateDisplay() {
+
+    const minutes =
+        Math.floor(
+            totalSpeechSeconds / 60
+        );
+
+
+    const seconds =
+        Math.floor(
+            totalSpeechSeconds % 60
+        );
+
+
+    document.getElementById(
+        "speechTime"
+    ).textContent =
+
+        minutes +
+        "分 " +
+        seconds +
+        "秒";
+
+
+    updateWordCount();
+
+}
+
+
+/* =========================
+   起動時
+========================= */
+
+setupRecognition();
+renderHistory();
+renderExperimentSamples();
+
+if (loadMyVoice()) {
+    document.getElementById("voiceRegisterMessage").textContent =
+        "✅ 本人の基準値を登録済み";
+}
+
+</script>
+
+</body>
+
+</html>
