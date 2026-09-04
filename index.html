@@ -8,7 +8,7 @@
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0">
 
-<title>ことばの歩数計 Ver.0.7.3</title>
+<title>ことばの歩数計 Ver.0.7.4</title>
 
 <style>
 
@@ -222,9 +222,105 @@ button {
 }
 
 
+/* =========================
+   Ver.0.6 識別実験モード
+========================= */
+
+.experiment {
+    margin-top: 26px;
+    padding: 18px;
+    background: #f7f7f7;
+    border-radius: 15px;
+    text-align: left;
+}
+
+.experiment h2 {
+    text-align: center;
+    font-size: 20px;
+    margin: 0 0 10px;
+}
+
+.experiment p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #666;
+    margin: 8px 0 14px;
+}
+
+.mode-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.mode-button {
+    width: 100%;
+    margin: 0;
+    padding: 12px 8px;
+    font-size: 15px;
+    background: #eee;
+    color: #333;
+}
+
+.mode-button.active {
+    background: #222;
+    color: white;
+}
+
+.mode-status {
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    background: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+.sample-list {
+    margin-top: 14px;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.sample-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.sample-row:last-child {
+    border-bottom: none;
+}
+
+.sample-label {
+    color: #555;
+}
+
+.sample-value {
+    font-variant-numeric: tabular-nums;
+    font-weight: bold;
+}
+
+.sample-clear {
+    margin-top: 12px;
+    width: 100%;
+    background: #eee;
+    color: #666;
+}
+
+.experiment-note {
+    margin-top: 12px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #888;
+}
+
 
 /* =========================
-   Ver.0.7.3 本人らしさ + 動作チェック
+   Ver.0.7.4 本人らしさ + 動作チェック
 ========================= */
 .debug-panel {
     margin-top: 22px;
@@ -418,9 +514,8 @@ button {
 </div>
 
 
-
 <div class="debug-panel">
-<h2>🛠️ 動作チェック Ver.0.7.3</h2>
+<h2>🛠️ 動作チェック Ver.0.7.4</h2>
 <div class="debug-row"><span>🎙️ マイク取得</span><strong id="dbgMic">未確認</strong></div>
 <div class="debug-row"><span>🔊 音量解析</span><strong id="dbgAudio">未確認</strong></div>
 <div class="debug-row"><span>📝 音声認識</span><strong id="dbgSpeech">未確認</strong></div>
@@ -430,33 +525,23 @@ button {
 </div>
 
 <div class="voice-id">
-<h2>🎤 本人らしさ実験 Ver.0.7.3</h2>
+<h2>🎤 本人らしさ実験 Ver.0.7.4</h2>
 <p>
 ① 静かな場所で自分の地声を10〜20秒計測 → 停止 → 「本人の声として登録」。<br>
 ② リセット後、自分・他人・テレビなどを10〜20秒計測 → 停止。<br>
 登録した声との音響的な近さを試験表示します。
 </p>
-
-<button class="voice-button" onclick="registerMyVoice()">
-👤 この計測を「本人の声」として登録
-</button>
-
+<button class="voice-button" onclick="registerMyVoice()">👤 この計測を「本人の声」として登録</button>
 <div id="voiceRegisterMessage" class="save-message">未登録</div>
-
 <div class="voice-score">
 <div>本人らしさ（実験値）</div>
 <div id="voiceScore" class="big">--%</div>
 <div id="voiceJudge" class="small">本人音声を登録してください</div>
 <div id="voiceFeatures" class="small" style="margin-top:10px;line-height:1.7;"></div>
 </div>
-
-<button class="voice-clear" onclick="clearMyVoice()">
-🗑️ 本人音声の登録値を消す
-</button>
-
+<button class="voice-clear" onclick="clearMyVoice()">🗑️ 本人音声の登録値を消す</button>
 <div class="experiment-note">
-※本人確認や声紋認証ではありません。声の高さ、ゼロ交差率、波形変化量などの
-簡易音響特徴を比較する概念実証です。生音声や認識文章は本人登録データとして保存しません。
+※本人確認や声紋認証ではありません。声の高さ、ゼロ交差率、波形変化量などの簡易音響特徴を比較する概念実証です。生音声や認識文章は本人登録データとして保存しません。
 </div>
 </div>
 
@@ -613,7 +698,7 @@ let lastSpeechTime = null;
 
 const THRESHOLD = 0.035;
 
-/* Ver.0.7.3 音響特徴 */
+/* Ver.0.7.4 音響特徴 */
 let featureFrames = 0;
 let featureRmsSum = 0;
 let featureZcrSum = 0;
@@ -639,7 +724,6 @@ let finalTranscript = "";
    初期設定
 ========================= */
 
-
 function setDebug(id, value) {
     const el = document.getElementById(id);
     if (el) el.textContent = value;
@@ -648,12 +732,7 @@ function setDebug(id, value) {
 function setDebugError(error) {
     const el = document.getElementById("dbgError");
     if (!el) return;
-
-    if (!error) {
-        el.textContent = "";
-        return;
-    }
-
+    if (!error) { el.textContent = ""; return; }
     const name = error && error.name ? error.name : "";
     const message = error && error.message ? error.message : String(error);
     el.textContent = "エラー詳細: " + (name ? name + " / " : "") + message;
@@ -871,13 +950,7 @@ async function startListening() {
 
         setDebugError(error);
 
-        if (
-            error &&
-            (
-                error.name === "NotAllowedError" ||
-                error.name === "NotFoundError"
-            )
-        ) {
+        if (error && (error.name === "NotAllowedError" || error.name === "NotFoundError")) {
             setDebug("dbgMic", "❌ 失敗");
         } else {
             setDebug("dbgAudio", "❌ エラー");
@@ -968,6 +1041,8 @@ function detectVoice() {
             document.getElementById("status")
                 .textContent =
                 "🗣️ 発話中";
+
+            setDebug("dbgVad", "✅ 発話検知");
 
             document.getElementById("status")
                 .className =
@@ -1179,36 +1254,28 @@ function updateSpeechRate(words) {
 
 
 
+
 /* =========================
-   Ver.0.7.3 本人らしさ実験
+   Ver.0.7.4 本人らしさ実験
 ========================= */
-const VOICE_PROFILE_KEY = "kotobaHosuukeiVoiceProfileV073";
+const VOICE_PROFILE_KEY = "kotobaHosuukeiVoiceProfileV074";
 
 function collectVoiceFeatures(data, rms) {
     if (rms <= THRESHOLD) return;
-
     let crossings = 0;
     let diff = 0;
-
     for (let i = 1; i < data.length; i++) {
         const a = data[i - 1] - 128;
         const b = data[i] - 128;
-
-        if ((a >= 0 && b < 0) || (a < 0 && b >= 0)) {
-            crossings++;
-        }
-
+        if ((a >= 0 && b < 0) || (a < 0 && b >= 0)) crossings++;
         diff += Math.abs(data[i] - data[i - 1]);
     }
-
     featureFrames++;
     featureRmsSum += rms;
     featureZcrSum += crossings / data.length;
     featureDiffSum += diff / data.length;
-
     if (audioContext && featureFrames % 5 === 0) {
         const pitch = estimatePitch(data, audioContext.sampleRate);
-
         if (pitch >= 70 && pitch <= 400) {
             featurePitchSum += pitch;
             featurePitchFrames++;
@@ -1220,46 +1287,31 @@ function estimatePitch(data, sampleRate) {
     const n = data.length;
     const x = new Float32Array(n);
     let mean = 0;
-
     for (let i = 0; i < n; i++) mean += data[i];
     mean /= n;
-
-    for (let i = 0; i < n; i++) {
-        x[i] = (data[i] - mean) / 128;
-    }
-
+    for (let i = 0; i < n; i++) x[i] = (data[i] - mean) / 128;
     const minLag = Math.floor(sampleRate / 400);
     const maxLag = Math.min(Math.floor(sampleRate / 70), n - 2);
-
     let bestLag = 0;
     let bestCorrelation = 0;
-
     for (let lag = minLag; lag <= maxLag; lag++) {
         let correlation = 0;
-
-        for (let i = 0; i < n - lag; i++) {
-            correlation += x[i] * x[i + lag];
-        }
-
+        for (let i = 0; i < n - lag; i++) correlation += x[i] * x[i + lag];
         if (correlation > bestCorrelation) {
             bestCorrelation = correlation;
             bestLag = lag;
         }
     }
-
     return bestLag ? sampleRate / bestLag : 0;
 }
 
 function currentVoiceFeatures() {
     if (featureFrames <= 0) return null;
-
     return {
         rms: featureRmsSum / featureFrames,
         zcr: featureZcrSum / featureFrames,
         diff: featureDiffSum / featureFrames,
-        pitch: featurePitchFrames > 0
-            ? featurePitchSum / featurePitchFrames
-            : 0
+        pitch: featurePitchFrames > 0 ? featurePitchSum / featurePitchFrames : 0
     };
 }
 
@@ -1273,89 +1325,49 @@ function loadMyVoice() {
 }
 
 function similarity(value, reference, floor) {
-    if (
-        !Number.isFinite(value) ||
-        !Number.isFinite(reference) ||
-        reference === 0
-    ) {
-        return 0.5;
-    }
-
-    const d =
-        Math.abs(value - reference) /
-        Math.max(Math.abs(reference), floor);
-
+    if (!Number.isFinite(value) || !Number.isFinite(reference) || reference === 0) return 0.5;
+    const d = Math.abs(value - reference) / Math.max(Math.abs(reference), floor);
     return Math.max(0, Math.min(1, 1 - d));
 }
 
 function registerMyVoice() {
     const f = currentVoiceFeatures();
-
     if (!f || totalSpeechSeconds < 5) {
         document.getElementById("voiceRegisterMessage").textContent =
             "5秒以上、自分の声を計測してから登録してください。";
         return;
     }
-
-    localStorage.setItem(
-        VOICE_PROFILE_KEY,
-        JSON.stringify(f)
-    );
-
+    localStorage.setItem(VOICE_PROFILE_KEY, JSON.stringify(f));
     document.getElementById("voiceRegisterMessage").textContent =
         "✅ 本人の基準値を登録しました";
-
     updateVoiceScore();
 }
 
 function updateVoiceScore() {
     const p = loadMyVoice();
     const c = currentVoiceFeatures();
-
     const scoreEl = document.getElementById("voiceScore");
     const judgeEl = document.getElementById("voiceJudge");
     const featureEl = document.getElementById("voiceFeatures");
-
     if (!p) {
         scoreEl.textContent = "--%";
         judgeEl.textContent = "本人音声を登録してください";
         return;
     }
-
     if (!c || totalSpeechSeconds < 3) {
         scoreEl.textContent = "--%";
         judgeEl.textContent = "3秒以上計測すると比較できます";
         return;
     }
-
     const rms = similarity(c.rms, p.rms, 0.02);
     const zcr = similarity(c.zcr, p.zcr, 0.02);
     const dif = similarity(c.diff, p.diff, 1);
-    const pit =
-        (c.pitch > 0 && p.pitch > 0)
-        ? similarity(c.pitch, p.pitch, 40)
-        : 0.5;
-
-    const score =
-        Math.round(
-            100 * (
-                rms * 0.10 +
-                zcr * 0.25 +
-                dif * 0.20 +
-                pit * 0.45
-            )
-        );
-
+    const pit = (c.pitch > 0 && p.pitch > 0) ? similarity(c.pitch, p.pitch, 40) : 0.5;
+    const score = Math.round(100 * (rms * 0.10 + zcr * 0.25 + dif * 0.20 + pit * 0.45));
     scoreEl.textContent = score + "%";
-
-    if (score >= 80) {
-        judgeEl.textContent = "登録した声にかなり近い傾向";
-    } else if (score >= 60) {
-        judgeEl.textContent = "登録した声にやや近い傾向";
-    } else {
-        judgeEl.textContent = "登録した声とは異なる傾向";
-    }
-
+    if (score >= 80) judgeEl.textContent = "登録した声にかなり近い傾向";
+    else if (score >= 60) judgeEl.textContent = "登録した声にやや近い傾向";
+    else judgeEl.textContent = "登録した声とは異なる傾向";
     featureEl.innerHTML =
         "平均ピッチ：約" + Math.round(c.pitch || 0) + " Hz<br>" +
         "ゼロ交差率：" + c.zcr.toFixed(3) + "<br>" +
@@ -1364,13 +1376,9 @@ function updateVoiceScore() {
 
 function clearMyVoice() {
     localStorage.removeItem(VOICE_PROFILE_KEY);
-
-    document.getElementById("voiceRegisterMessage").textContent =
-        "本人登録を消しました";
-
+    document.getElementById("voiceRegisterMessage").textContent = "本人登録を消しました";
     document.getElementById("voiceScore").textContent = "--%";
-    document.getElementById("voiceJudge").textContent =
-        "本人音声を登録してください";
+    document.getElementById("voiceJudge").textContent = "本人音声を登録してください";
     document.getElementById("voiceFeatures").textContent = "";
 }
 
@@ -1381,109 +1389,10 @@ function resetVoiceFeatures() {
     featureDiffSum = 0;
     featurePitchSum = 0;
     featurePitchFrames = 0;
-
     const s = document.getElementById("voiceScore");
     if (s) s.textContent = "--%";
-
     const f = document.getElementById("voiceFeatures");
     if (f) f.textContent = "";
-}
-
-
-/* =========================
-   Ver.0.6 識別実験モード
-========================= */
-
-.experiment {
-    margin-top: 26px;
-    padding: 18px;
-    background: #f7f7f7;
-    border-radius: 15px;
-    text-align: left;
-}
-
-.experiment h2 {
-    text-align: center;
-    font-size: 20px;
-    margin: 0 0 10px;
-}
-
-.experiment p {
-    font-size: 14px;
-    line-height: 1.7;
-    color: #666;
-    margin: 8px 0 14px;
-}
-
-.mode-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-}
-
-.mode-button {
-    width: 100%;
-    margin: 0;
-    padding: 12px 8px;
-    font-size: 15px;
-    background: #eee;
-    color: #333;
-}
-
-.mode-button.active {
-    background: #222;
-    color: white;
-}
-
-.mode-status {
-    margin-top: 12px;
-    padding: 12px;
-    border-radius: 10px;
-    background: white;
-    text-align: center;
-    font-weight: bold;
-}
-
-.sample-list {
-    margin-top: 14px;
-    font-size: 14px;
-    line-height: 1.7;
-}
-
-.sample-row {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    gap: 8px;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #e5e5e5;
-}
-
-.sample-row:last-child {
-    border-bottom: none;
-}
-
-.sample-label {
-    color: #555;
-}
-
-.sample-value {
-    font-variant-numeric: tabular-nums;
-    font-weight: bold;
-}
-
-.sample-clear {
-    margin-top: 12px;
-    width: 100%;
-    background: #eee;
-    color: #666;
-}
-
-.experiment-note {
-    margin-top: 12px;
-    font-size: 12px;
-    line-height: 1.6;
-    color: #888;
 }
 
 /* =========================
